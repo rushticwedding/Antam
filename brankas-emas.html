@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brankas Emas — Antam Trading</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #d4a847;
+    --gold-dark: #b8831a;
+    --gold-dim: #a07840;
+    --gold-faint: #7a5c2a;
+    --gold-ghost: #5a3e1b;
+    --gold-trace: #3d2800;
+    --gold-deep: #2d1a00;
+    --bg: #0e0a04;
+    --bg1: #150e00;
+    --bg2: #1a1208;
+    --bg3: #1f1400;
+    --text: #f5e6c8;
+    --text-dim: #c8a870;
+    --green: #4ade80;
+    --green-bg: #0d2010;
+    --green-border: #2d5a1a;
+    --red: #f87171;
+    --red-bg: #200d0d;
+    --red-border: #5a1a1a;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a0f00 0%, #2d1a00 50%, #1a0f00 100%);
+    border-bottom: 1px solid var(--gold-trace);
+    padding: 18px 24px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .header-logo h1 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--gold); letter-spacing: 1px; }
+  .header-sub { font-size: 10px; color: var(--gold-faint); letter-spacing: 3px; margin-top: 2px; padding-left: 32px; text-transform: uppercase; }
+
+  /* BUTTONS */
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    border: none; color: var(--bg); padding: 9px 18px;
+    border-radius: 8px; font-weight: 700; cursor: pointer;
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+  }
+  .btn-gold:hover { opacity: 0.85; }
+  .btn-outline {
+    background: transparent; border: 1px solid var(--gold-ghost);
+    color: var(--gold-dim); padding: 8px 16px; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+  }
+  .btn-outline:hover { border-color: var(--gold); }
+  .btn-danger {
+    background: #3a0f0f; border: 1px solid var(--red-border);
+    color: var(--red); padding: 8px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-edit {
+    background: var(--gold-deep); border: 1px solid var(--gold-ghost);
+    color: var(--gold); padding: 8px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif;
+  }
+
+  /* MAIN */
+  .main { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .summary-card {
+    background: linear-gradient(135deg, var(--bg1), var(--bg3));
+    border: 1px solid var(--gold-trace); border-radius: 12px; padding: 14px 16px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .summary-card .icon { font-size: 18px; margin-bottom: 4px; }
+  .summary-card .slabel { font-size: 10px; color: var(--gold-faint); letter-spacing: 1px; text-transform: uppercase; }
+  .summary-card .sval { font-size: 15px; font-weight: 700; color: var(--gold); margin-top: 3px; }
+  .summary-card .sval.profit-pos { color: var(--green); }
+  .summary-card .sval.profit-neg { color: var(--red); }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-input {
+    flex: 1; min-width: 200px;
+    background: var(--bg2); border: 1px solid var(--gold-trace);
+    border-radius: 8px; padding: 8px 14px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--gold); }
+  .filter-btn {
+    background: var(--bg2); border: 1px solid var(--gold-trace);
+    color: var(--gold-dim); padding: 8px 14px; border-radius: 8px;
+    cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: var(--gold); color: var(--bg); font-weight: 700;
+    border-color: var(--gold);
+  }
+
+  /* LIST */
+  .record-list { display: flex; flex-direction: column; gap: 10px; }
+  .record-card {
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    border: 1px solid var(--gold-trace);
+    border-left: 3px solid var(--gold);
+    border-radius: 10px; padding: 14px 16px;
+    cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+    animation: fadeUp 0.3s ease both;
+  }
+  .record-card.sold { border-left-color: var(--green); border-color: #2d4a1a; }
+  .record-card:hover { transform: translateX(3px); }
+  .record-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+  .record-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .record-gram { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--gold); }
+  .badge {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-weight: 600; text-transform: uppercase;
+  }
+  .badge-stok { background: var(--gold-deep); color: var(--gold); }
+  .badge-sold { background: #1c3a12; color: var(--green); }
+  .record-meta { font-size: 12px; color: var(--gold-faint); }
+  .record-buyer { font-size: 12px; color: var(--gold-dim); margin-top: 2px; }
+  .record-profit-pos { font-weight: 700; font-size: 15px; color: var(--green); }
+  .record-profit-neg { font-weight: 700; font-size: 15px; color: var(--red); }
+  .record-unsold { font-size: 12px; color: var(--gold-ghost); }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 60px 20px; color: var(--gold-ghost); }
+  .empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; }
+
+  /* PANEL (form / detail) */
+  .panel {
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    border: 1px solid var(--gold-trace); border-radius: 14px; padding: 24px;
+    animation: fadeUp 0.3s ease both;
+  }
+  .panel-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--gold); margin-bottom: 20px; }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label {
+    font-size: 10px; color: var(--gold-dim); font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;
+  }
+  .form-input, .form-textarea {
+    background: var(--bg2); border: 1px solid var(--gold-ghost);
+    border-radius: 8px; padding: 8px 12px; color: var(--text);
+    font-size: 13px; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s; width: 100%;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--gold); }
+  .form-textarea { resize: vertical; }
+  .form-divider {
+    grid-column: 1/-1; border-top: 1px solid var(--gold-trace);
+    margin: 4px 0; opacity: 0.5;
+  }
+  .form-section-label {
+    grid-column: 1/-1; font-size: 10px; color: var(--gold-ghost);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
+  }
+
+  /* PROFIT PREVIEW */
+  .profit-preview {
+    margin-top: 16px; background: var(--bg);
+    border: 1px solid var(--gold-trace); border-radius: 10px; padding: 12px 16px;
+  }
+  .profit-preview-label { font-size: 11px; color: var(--gold-faint); margin-bottom: 6px; }
+  .profit-preview-row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .profit-preview-item span.plabel { font-size: 11px; color: var(--gold-ghost); }
+  .profit-preview-item span.pval { font-size: 13px; color: var(--text); }
+
+  /* FORM ACTIONS */
+  .form-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  /* DETAIL */
+  .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .detail-gram { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--gold); }
+  .detail-actions { display: flex; gap: 8px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-card {
+    background: var(--bg); border: 1px solid var(--gold-deep);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .detail-card.sold-card { border-color: #1c3a12; }
+  .detail-card .dlabel { font-size: 10px; color: var(--gold-ghost); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .detail-card .dval { font-size: 14px; color: var(--text); }
+  .detail-divider { border-top: 1px solid var(--gold-trace); margin: 16px 0; }
+
+  /* PROFIT BOX */
+  .profit-box {
+    margin-top: 12px; border-radius: 10px; padding: 14px 18px; text-align: center;
+  }
+  .profit-box.pos { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .profit-box.neg { background: var(--red-bg); border: 1px solid var(--red-border); }
+  .profit-box .pb-label { font-size: 10px; color: #7a7a7a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .profit-box .pb-val { font-family: 'DM Serif Display', serif; font-size: 28px; }
+  .profit-box.pos .pb-val { color: var(--green); }
+  .profit-box.neg .pb-val { color: var(--red); }
+  .profit-box .pb-pct { font-size: 12px; margin-top: 2px; }
+  .profit-box.pos .pb-pct { color: var(--green); }
+  .profit-box.neg .pb-pct { color: var(--red); }
+
+  /* KETERANGAN */
+  .detail-note {
+    margin-top: 12px; background: var(--bg);
+    border: 1px solid var(--gold-deep); border-radius: 8px; padding: 10px 14px;
+  }
+  .detail-note .dlabel { font-size: 10px; color: var(--gold-ghost); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .detail-note .dval { font-size: 13px; color: var(--text-dim); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: 20px; right: 20px; z-index: 9999;
+    padding: 12px 20px; border-radius: 8px; font-size: 13px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-family: 'DM Sans', sans-serif;
+    animation: fadeUp 0.3s ease;
+  }
+  .toast.success { background: #1c4a1c; border: 1px solid #4a9; color: #fff; }
+  .toast.error { background: #7b1c1c; border: 1px solid #e55; color: #fff; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 500px) {
+    .form-grid, .detail-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .form-section-label, .form-divider { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-logo">
+        <span style="font-size:22px">⚜</span>
+        <h1>Brankas Emas</h1>
+      </div>
+      <div class="header-sub">Antam Trading Database</div>
+    </div>
+    <div id="header-btn"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" style="display:none"></div>
+
+<!-- MAIN -->
+<div class="main" id="app"></div>
+
+<script>
+const STORAGE_KEY = 'brankas-emas-db';
+
+// ── Helpers ──────────────────────────────────────
+const fRp = v => v !== '' && v !== null && v !== undefined
+  ? 'Rp ' + Number(v).toLocaleString('id-ID') : '-';
+
+const fDate = d => {
+  if (!d) return '-';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+};
+
+const profit = r => {
+  if (!r.tgl_jual || !r.harga_jual) return null;
+  const beli = Number(r.harga_beli) * Number(r.berat);
+  const jual = Number(r.harga_jual) * Number(r.berat);
+  const cetak = Number(r.biaya_cetak) || 0;
+  return jual - beli - cetak;
+};
+
+const modal = r =>
+  Number(r.harga_beli) * Number(r.berat) + (Number(r.biaya_cetak) || 0);
+
+// ── Storage ───────────────────────────────────────
+const load = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+const save = d => localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+
+// ── State ─────────────────────────────────────────
+let records = load();
+let mode = 'list'; // list | add | edit | detail
+let editData = null;
+let detailId = null;
+let search = '';
+let filterStatus = 'semua';
+
+// ── Toast ─────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+// ── Render ────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  const hBtn = document.getElementById('header-btn');
+
+  if (mode === 'list') {
+    hBtn.innerHTML = `<button class="btn-gold" onclick="openAdd()">+ Tambah Transaksi</button>`;
+    renderList(app);
+  } else if (mode === 'add' || mode === 'edit') {
+    hBtn.innerHTML = `<button class="btn-outline" onclick="goList()">← Kembali</button>`;
+    renderForm(app);
+  } else if (mode === 'detail') {
+    hBtn.innerHTML = `<button class="btn-outline" onclick="goList()">← Kembali</button>`;
+    renderDetail(app);
+  }
+}
+
+// ── LIST ──────────────────────────────────────────
+function renderList(app) {
+  const all = records;
+  const totalBerat = all.reduce((s,r) => s + Number(r.berat||0), 0);
+  const totalModal = all.reduce((s,r) => s + modal(r), 0);
+  const totalProfit = all.reduce((s,r) => { const p=profit(r); return p!==null?s+p:s; }, 0);
+  const stok = all.filter(r=>!r.tgl_jual).reduce((s,r)=>s+Number(r.berat||0),0);
+
+  const profitCls = totalProfit >= 0 ? 'profit-pos' : 'profit-neg';
+
+  let filtered = all.filter(r => {
+    const q = search.toLowerCase();
+    const ms = !q || (r.pembeli||'').toLowerCase().includes(q)
+      || (r.berat||'').toString().includes(q)
+      || (r.keterangan||'').toLowerCase().includes(q);
+    const mf = filterStatus==='semua' ? true
+      : filterStatus==='stok' ? !r.tgl_jual : !!r.tgl_jual;
+    return ms && mf;
+  });
+
+  const cards = filtered.length === 0
+    ? `<div class="empty"><div class="empty-icon">⚜</div><p>Belum ada data transaksi</p></div>`
+    : filtered.map(r => {
+        const p = profit(r);
+        const sold = !!r.tgl_jual;
+        const profitHtml = p !== null
+          ? `<div class="${p>=0?'record-profit-pos':'record-profit-neg'}">${p>=0?'+':''}${fRp(p)}</div>`
+          : `<div class="record-unsold">Belum dijual</div>`;
+        return `
+          <div class="record-card ${sold?'sold':''}" onclick="openDetail(${r.id})">
+            <div class="record-top">
+              <div>
+                <div class="record-title">
+                  <span class="record-gram">${r.berat} gram</span>
+                  <span class="badge ${sold?'badge-sold':'badge-stok'}">${sold?'Terjual':'Stok'}</span>
+                </div>
+                <div class="record-meta">Beli: ${fDate(r.tgl_beli)} · ${fRp(Number(r.harga_beli)*Number(r.berat))}</div>
+                ${r.pembeli ? `<div class="record-buyer">Pembeli: ${r.pembeli}</div>` : ''}
+              </div>
+              <div>${profitHtml}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+  app.innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="icon">🏅</div>
+        <div class="slabel">Total Emas</div>
+        <div class="sval">${totalBerat.toFixed(2)} gr</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">📦</div>
+        <div class="slabel">Stok Aktif</div>
+        <div class="sval">${stok.toFixed(2)} gr</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">💰</div>
+        <div class="slabel">Total Modal</div>
+        <div class="sval">${fRp(totalModal)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="icon">📈</div>
+        <div class="slabel">Total Profit</div>
+        <div class="sval ${profitCls}">${fRp(totalProfit)}</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <input class="search-input" type="text" placeholder="🔍 Cari pembeli, berat, keterangan..."
+        value="${search}" oninput="onSearch(this.value)" />
+      <button class="filter-btn ${filterStatus==='semua'?'active':''}" onclick="setFilter('semua')">Semua</button>
+      <button class="filter-btn ${filterStatus==='stok'?'active':''}" onclick="setFilter('stok')">Stok</button>
+      <button class="filter-btn ${filterStatus==='terjual'?'active':''}" onclick="setFilter('terjual')">Terjual</button>
+    </div>
+
+    <div class="record-list">${cards}</div>
+  `;
+}
+
+// ── FORM ──────────────────────────────────────────
+function renderForm(app) {
+  const d = editData || {};
+  app.innerHTML = `
+    <div class="panel">
+      <div class="panel-title">${mode==='add'?'Tambah Transaksi Baru':'Edit Transaksi'}</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Tanggal Beli di Brankas *</label>
+          <input class="form-input" type="date" id="f_tgl_beli" value="${d.tgl_beli||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Berat Emas (gram) *</label>
+          <input class="form-input" type="number" id="f_berat" placeholder="cth: 5" value="${d.berat||''}" oninput="updatePreview()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Harga Beli / gram (Rp) *</label>
+          <input class="form-input" type="number" id="f_harga_beli" placeholder="cth: 1900000" value="${d.harga_beli||''}" oninput="updatePreview()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tanggal Cetak</label>
+          <input class="form-input" type="date" id="f_tgl_cetak" value="${d.tgl_cetak||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Biaya Cetak (Rp)</label>
+          <input class="form-input" type="number" id="f_biaya_cetak" placeholder="cth: 50000" value="${d.biaya_cetak||''}" oninput="updatePreview()" />
+        </div>
+        <div></div>
+
+        <div class="form-divider"></div>
+        <div class="form-section-label">Data Penjualan (isi jika sudah terjual)</div>
+
+        <div class="form-group">
+          <label class="form-label">Tanggal Jual</label>
+          <input class="form-input" type="date" id="f_tgl_jual" value="${d.tgl_jual||''}" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Harga Jual / gram (Rp)</label>
+          <input class="form-input" type="number" id="f_harga_jual" placeholder="cth: 2000000" value="${d.harga_jual||''}" oninput="updatePreview()" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Nama Pembeli</label>
+          <input class="form-input" type="text" id="f_pembeli" placeholder="cth: Budi Santoso" value="${d.pembeli||''}" />
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Keterangan</label>
+          <textarea class="form-textarea" id="f_keterangan" rows="2" placeholder="Catatan tambahan...">${d.keterangan||''}</textarea>
+        </div>
+      </div>
+
+      <div class="profit-preview" id="profit-preview" style="display:none">
+        <div class="profit-preview-label">Preview Profit</div>
+        <div class="profit-preview-row" id="preview-row"></div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-gold" onclick="submitForm()">${mode==='add'?'Simpan Transaksi':'Update Data'}</button>
+        <button class="btn-outline" onclick="goList()">Batal</button>
+      </div>
+    </div>
+  `;
+  updatePreview();
+}
+
+function updatePreview() {
+  const berat = Number(document.getElementById('f_berat')?.value || 0);
+  const hb = Number(document.getElementById('f_harga_beli')?.value || 0);
+  const hj = Number(document.getElementById('f_harga_jual')?.value || 0);
+  const bc = Number(document.getElementById('f_biaya_cetak')?.value || 0);
+  const pp = document.getElementById('profit-preview');
+  const pr = document.getElementById('preview-row');
+  if (!pp) return;
+  if (berat && hb && hj) {
+    const m = hb * berat + bc;
+    const j = hj * berat;
+    const p = j - m;
+    const pct = ((p / m) * 100).toFixed(1);
+    pp.style.display = 'block';
+    pr.innerHTML = `
+      <div class="profit-preview-item"><span class="plabel">Modal: </span><span class="pval">${fRp(m)}</span></div>
+      <div class="profit-preview-item"><span class="plabel">Hasil Jual: </span><span class="pval">${fRp(j)}</span></div>
+      <div class="profit-preview-item"><span class="plabel">Profit: </span>
+        <span style="font-weight:700;color:${p>=0?'var(--green)':'var(--red)'}">${p>=0?'+':''}${fRp(p)} (${pct}%)</span>
+      </div>`;
+  } else {
+    pp.style.display = 'none';
+  }
+}
+
+function submitForm() {
+  const tgl_beli = document.getElementById('f_tgl_beli').value;
+  const berat = document.getElementById('f_berat').value;
+  const harga_beli = document.getElementById('f_harga_beli').value;
+  if (!tgl_beli || !berat || !harga_beli) {
+    showToast('Tanggal beli, berat, dan harga beli wajib diisi!', 'error');
+    return;
+  }
+  const rec = {
+    id: editData?.id || Date.now(),
+    tgl_beli,
+    berat,
+    harga_beli,
+    tgl_cetak: document.getElementById('f_tgl_cetak').value,
+    biaya_cetak: document.getElementById('f_biaya_cetak').value,
+    tgl_jual: document.getElementById('f_tgl_jual').value,
+    harga_jual: document.getElementById('f_harga_jual').value,
+    pembeli: document.getElementById('f_pembeli').value,
+    keterangan: document.getElementById('f_keterangan').value,
+  };
+  if (mode === 'add') {
+    records = [rec, ...records];
+    showToast('Data berhasil ditambahkan!');
+  } else {
+    records = records.map(r => r.id === rec.id ? rec : r);
+    showToast('Data berhasil diperbarui!');
+  }
+  save(records);
+  goList();
+}
+
+// ── DETAIL ────────────────────────────────────────
+function renderDetail(app) {
+  const r = records.find(x => x.id === detailId);
+  if (!r) { goList(); return; }
+  const p = profit(r);
+  const sold = !!r.tgl_jual;
+
+  const profitBox = p !== null ? `
+    <div class="detail-divider"></div>
+    <div class="detail-grid">
+      <div class="detail-card sold-card">
+        <div class="dlabel">Tanggal Jual</div>
+        <div class="dval">${fDate(r.tgl_jual)}</div>
+      </div>
+      <div class="detail-card sold-card">
+        <div class="dlabel">Pembeli</div>
+        <div class="dval">${r.pembeli || '-'}</div>
+      </div>
+      <div class="detail-card sold-card">
+        <div class="dlabel">Harga Jual / gram</div>
+        <div class="dval">${fRp(r.harga_jual)}</div>
+      </div>
+      <div class="detail-card sold-card">
+        <div class="dlabel">Total Hasil Jual</div>
+        <div class="dval">${fRp(Number(r.harga_jual)*Number(r.berat))}</div>
+      </div>
+    </div>
+    <div class="profit-box ${p>=0?'pos':'neg'}">
+      <div class="pb-label">Profit Bersih</div>
+      <div class="pb-val">${p>=0?'+':''}${fRp(p)}</div>
+      <div class="pb-pct">(${((p/modal(r))*100).toFixed(1)}%)</div>
+    </div>` : '';
+
+  const noteHtml = r.keterangan ? `
+    <div class="detail-note">
+      <div class="dlabel">Keterangan</div>
+      <div class="dval">${r.keterangan}</div>
+    </div>` : '';
+
+  app.innerHTML = `
+    <div class="panel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-gram">${r.berat} Gram</div>
+          <span class="badge ${sold?'badge-sold':'badge-stok'}" style="margin-top:4px;display:inline-block">
+            ${sold ? 'Terjual' : 'Stok Aktif'}
+          </span>
+        </div>
+        <div class="detail-actions">
+          <button class="btn-edit" onclick="openEdit(${r.id})">✏️ Edit</button>
+          <button class="btn-danger" onclick="confirmDelete(${r.id})">🗑 Hapus</button>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-card">
+          <div class="dlabel">Tgl Beli di Brankas</div>
+          <div class="dval">${fDate(r.tgl_beli)}</div>
+        </div>
+        <div class="detail-card">
+          <div class="dlabel">Berat</div>
+          <div class="dval">${r.berat} gram</div>
+        </div>
+        <div class="detail-card">
+          <div class="dlabel">Harga Beli / gram</div>
+          <div class="dval">${fRp(r.harga_beli)}</div>
+        </div>
+        <div class="detail-card">
+          <div class="dlabel">Total Modal Beli</div>
+          <div class="dval">${fRp(Number(r.harga_beli)*Number(r.berat))}</div>
+        </div>
+        <div class="detail-card">
+          <div class="dlabel">Tgl Cetak</div>
+          <div class="dval">${fDate(r.tgl_cetak)}</div>
+        </div>
+        <div class="detail-card">
+          <div class="dlabel">Biaya Cetak</div>
+          <div class="dval">${fRp(r.biaya_cetak)}</div>
+        </div>
+      </div>
+
+      ${profitBox}
+      ${noteHtml}
+    </div>
+  `;
+}
+
+// ── Actions ───────────────────────────────────────
+function goList() { mode='list'; editData=null; detailId=null; render(); }
+function openAdd() { mode='add'; editData=null; render(); }
+function openEdit(id) {
+  editData = records.find(r=>r.id===id);
+  mode='edit'; render();
+}
+function openDetail(id) { detailId=id; mode='detail'; render(); }
+function onSearch(v) { search=v; render(); }
+function setFilter(f) { filterStatus=f; render(); }
+function confirmDelete(id) {
+  if (!confirm('Hapus data ini? Tindakan ini tidak bisa dibatalkan.')) return;
+  records = records.filter(r=>r.id!==id);
+  save(records);
+  showToast('Data dihapus.', 'error');
+  goList();
+}
+
+// ── Init ──────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
